@@ -1,0 +1,33 @@
+{
+  "name": "Overworld One",
+  "background": "#00aaff",
+  "tileSize": [32,32],
+  "size": [20, 14],
+  "tiles": [
+    {
+      "position": [5, 0],
+      "color": "#aaaa00",
+      "physics": {
+        "gravity": 0.1,
+        "stopAtBorder": true
+      }
+    }
+  ],
+  "sprites": [
+    {
+      "sprite": "KIRBY",
+      "state": "stand",
+      "position": [5, 400],
+      "physics": {
+        "type": "player",
+        "gravity": 2,
+        "stopAtBorder": true,
+        "hspeed": 0,
+        "vspeed": 0,
+        "jumpspeed": 24,
+        "maxhspeed": 8,
+        "maxvspeed": 16
+      }
+    }
+  ]
+}
