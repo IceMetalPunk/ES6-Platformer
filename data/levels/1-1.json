@@ -8,6 +8,7 @@
       "position": [5, 0],
       "color": "#aaaa00",
       "physics": {
+        "collisions": ["player"],
         "gravity": 0.1,
         "stopAtBorder": true
       }

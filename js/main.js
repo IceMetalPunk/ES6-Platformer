@@ -12,7 +12,7 @@ const Levels = ['1-1'];
 const tick = function(level) {
   drawLevel(level, Sprites);
   updateInput();
-  applyPhysics(level);
+  applyPhysics(level, Sprites);
 };
 
 const initialize = function() {

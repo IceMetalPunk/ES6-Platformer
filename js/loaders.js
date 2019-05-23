@@ -30,6 +30,14 @@ class Sprite {
       });
     });
   }
+  getBbox(sprite) {
+    return {
+      left: sprite.position[0],
+      top: sprite.position[1] - this.data.states[sprite.state][this.index * 5 + 3],
+      right: sprite.position[0] + this.data.states[sprite.state][this.index * 5 + 2],
+      bottom: sprite.position[1]
+    };
+  }
 
   draw(context, sprite) {
     if (++this.timer >= this.data.states[sprite.state][this.index * 5 + 4]) {
