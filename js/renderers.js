@@ -24,6 +24,7 @@ const renderTiles = function(level) {
       h += Math.max(tile.position[3] * level.tileSize[1], tile.position[1] * level.tileSize[1]) - Math.min(tile.position[3] * level.tileSize[1], tile.position[1] * level.tileSize[1]);
     }
     context.fillRect(tile.position[0] * level.tileSize[0], tile.position[1] * level.tileSize[1], w, h);
+    context.strokeRect(tile.position[0] * level.tileSize[0], tile.position[1] * level.tileSize[1], w, h);
   });
 }
 
