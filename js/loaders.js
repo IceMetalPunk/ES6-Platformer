@@ -27,8 +27,7 @@ class Sprite {
       });
     }
     catch (err) {
-      console.log(err);
-      throw err;
+      throw new Error(`Error loading sprite ${spriteName}: ${err.message}`);
     };
   }
   getBbox(sprite) {
@@ -72,7 +71,7 @@ const loadSprite = async function(spriteName = '') {
     return await sprite.load(spriteName);
   }
   catch (err) {
-    console.log(`Error: ${err}`);
+    console.log(err);
     throw err;
   }
 }
@@ -87,12 +86,18 @@ export async function loadLevels(levels) {
 };
 
 export async function loadSprites(sprites) {
-  const results = await Promise.all(
-    Object.keys(sprites).map(key => {
-      return Promise.all([key, loadSprite(sprites[key])]);
-    })
-  )
-  results.forEach(result => {
-    sprites[result[0]] = result[1];
-  });
+  try {
+    const results = await Promise.all(
+      Object.keys(sprites).map(key => {
+        return Promise.all([key, loadSprite(sprites[key])]);
+      })
+    )
+    results.forEach(result => {
+      sprites[result[0]] = result[1];
+    });
+  }
+  catch (err) {
+    console.log('Could not load sprites.');
+    throw err;
+  }
 }

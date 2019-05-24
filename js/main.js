@@ -16,12 +16,18 @@ const tick = function(level) {
 };
 
 const initialize = async function() {
-  initRenderers();
+  try {
+    initRenderers();
 
-  await loadSprites(Sprites);
-  await loadLevels(Levels);
-  
-  gameLoop = setInterval(() => tick(Levels[currentLevel]), 33);
+    await loadSprites(Sprites);
+    await loadLevels(Levels);
+    
+    gameLoop = setInterval(() => tick(Levels[currentLevel]), 33);
+  }
+  catch (err) {
+    alert(`Failed to load game because of error: ${err}`);
+    throw err;
+  }
 };
 
 window.addEventListener('DOMContentLoaded', initialize);
