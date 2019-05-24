@@ -1,6 +1,7 @@
 {
   "name": "Overworld One",
   "background": "#00aaff",
+  "music": "BGM1",
   "tileSize": [32,32],
   "size": [20, 14],
   "tiles": [

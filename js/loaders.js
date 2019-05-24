@@ -22,12 +22,12 @@ class Sprite {
       this.h = this.data.states[this.data.defaultState][this.index * 5 + 3];
       return await new Promise((resolve, reject) => {
         this.image.src = `../sprites/${spriteName}.png`;
-        this.image.onload = () => void resolve(this);
-        this.image.onerror = () => void reject(new Error(`Could not load sprite from URL ${this.image.src}`));
+        this.image.onload = () => resolve(this);
+        this.image.onerror = () => reject(new Error(`Could not load sprite from URL ${this.image.src}`));
       });
     }
     catch (err) {
-      throw new Error(`Error loading sprite ${spriteName}: ${err.message}`);
+      throw new Error(`Error loading sprite ${spriteName}:\n${err.message}`);
     };
   }
   getBbox(sprite) {
@@ -59,7 +59,7 @@ const loadLevel = async function(level = '') {
     return await result.json();
   }
   catch (err) {
-    throw new Error(`Error loading level ${level}: ${err.message}`);
+    throw new Error(`Error loading level ${level}:\n${err.message}`);
   };
 }
 
@@ -67,6 +67,20 @@ const loadSprite = async function(spriteName = '') {
   const sprite = new Sprite();
 
   return await sprite.load(spriteName);
+}
+
+const loadAudio = async function(audioName = '') {
+  try {
+    const audio = new Audio(`../data/audio/${audioName}`);
+    return await new Promise((resolve, reject) => {
+      audio.oncanplaythrough = () => resolve(audio);
+      audio.onerror = () => reject(new Error(`Could not load audio from URL ${audio.src}`))
+      audio.load();
+    });
+  }
+  catch (err) {
+    throw new Error(`Error loading audio ${audioName}:\n${err.message}`);
+  }
 }
 
 export async function loadLevels(levels) {
@@ -87,6 +101,22 @@ export async function loadSprites(sprites) {
     )
     results.forEach(result => {
       sprites[result[0]] = result[1];
+    });
+  }
+  catch (err) {
+    throw err;
+  }
+}
+
+export async function loadAudios(audios) {
+  try {
+    const results = await Promise.all(
+      Object.keys(audios).map(key => {
+        return Promise.all([key, loadAudio(audios[key])]);
+      })
+    );
+    results.forEach(result => {
+      audios[result[0]] = result[1];
     });
   }
   catch (err) {

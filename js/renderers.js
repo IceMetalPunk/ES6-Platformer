@@ -10,6 +10,8 @@ export function initRenderers() {
 const renderTitle = function(level) {
   context.fillStyle = '#000000';
   context.font = '20pt Calibri';
+  context.textAlign = 'left';
+  context.textBaseline = 'top';
   context.fillText(level.name, 5, 5);
 }
 
@@ -40,4 +42,32 @@ export function drawLevel(level, sprites) {
   renderSprites(level, sprites);
 
   renderTitle(level);
+}
+
+export function drawGameStartOverlay() {
+  context.fillStyle = '#000000';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#ffffff';
+  context.font = '48pt Calibri';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText('Click the Game to Start', canvas.width / 2, canvas.height / 2);
+}
+
+function fillMultilineText(context, text = '', x = 0, yy = 0) {
+  const lines = text.split('\n');
+  for (let y = yy, line = 0; line < lines.length; ++line) {
+    context.fillText(lines[line], x, y);
+    y += context.measureText('M').width + 2;
+  }
+}
+
+export function drawErrorOverlay(message = 'An unexpected error has occurred.') {
+  context.fillStyle = '#000000';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = '#ff0000';
+  context.font = '12pt Calibri';
+  context.textAlign = 'left';
+  context.textBaseline = 'top';
+  fillMultilineText(context, message, 5, 5);
 }
