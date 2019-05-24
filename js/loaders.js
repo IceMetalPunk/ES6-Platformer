@@ -20,10 +20,10 @@ class Sprite {
       this.y = this.data.states[this.data.defaultState][this.index * 5 + 1];
       this.w = this.data.states[this.data.defaultState][this.index * 5 + 2];
       this.h = this.data.states[this.data.defaultState][this.index * 5 + 3];
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         this.image.src = `../sprites/${spriteName}.png`;
         this.image.onload = () => void resolve(this);
-        this.image.onerror = () => void reject(`Could not load sprite from URL ${this.image.src}`);
+        this.image.onerror = () => void reject(new Error(`Could not load sprite from URL ${this.image.src}`));
       });
     }
     catch (err) {
@@ -59,21 +59,14 @@ const loadLevel = async function(level = '') {
     return await result.json();
   }
   catch (err) {
-    console.log(err);
-    throw err;
+    throw new Error(`Error loading level ${level}: ${err.message}`);
   };
 }
 
 const loadSprite = async function(spriteName = '') {
   const sprite = new Sprite();
-    
-  try {
-    return await sprite.load(spriteName);
-  }
-  catch (err) {
-    console.log(err);
-    throw err;
-  }
+
+  return await sprite.load(spriteName);
 }
 
 export async function loadLevels(levels) {
@@ -97,7 +90,6 @@ export async function loadSprites(sprites) {
     });
   }
   catch (err) {
-    console.log('Could not load sprites.');
     throw err;
   }
 }

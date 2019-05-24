@@ -25,7 +25,7 @@ const initialize = async function() {
     gameLoop = setInterval(() => tick(Levels[currentLevel]), 33);
   }
   catch (err) {
-    alert(`Failed to load game because of error: ${err}`);
+    alert(`Failed to load game! Cause: ${err.message}`);
     throw err;
   }
 };
