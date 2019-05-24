@@ -22,30 +22,12 @@ const applyTilePhysics = function(level) {
   });
 };
 
-const tileCollision = function(level, sprite, sprites) {
-  const bbox = sprites[sprite.sprite].getBbox(sprite);
-  return level.tiles.some(tile => {
-    if (!tile.physics || !tile.physics.collisions || !tile.physics.collisions.includes(sprite.physics.type)) {
-      return false;
-    }
-    const tileBox = {
-      left: tile.position[0] * level.tileSize[0],
-      top: tile.position[1] * level.tileSize[1],
-      right: tile.position[0] * level.tileSize[0] + level.tileSize[0],
-      bottom: tile.position[1] * level.tileSize[1] + level.tileSize[1]
-    };
-    console.log(bbox, ' vs ', tileBox);
-    return bbox.left <= tileBox.right && bbox.right >= tileBox.left && bbox.top <= tileBox.bottom &&
-           bbox.bottom >= tileBox.top;
-  });
-}
-
 const applySpritePhysics = function(level, sprites) {
   level.sprites.forEach(sprite => {
     sprite.position[0] += sprite.physics.hspeed;
     sprite.position[1] += sprite.physics.vspeed;
 
-    if (!tileCollision(level, sprite, sprites) && (!sprite.physics.stopAtBorder || sprite.position[1] < level.size[1] * level.tileSize[1])) {
+    if (!sprite.physics.stopAtBorder || sprite.position[1] < level.size[1] * level.tileSize[1]) {
       sprite.physics.vspeed += sprite.physics.gravity;
       sprite.physics.vspeed = Math.min(sprite.physics.vspeed, sprite.physics.maxvspeed);
     }

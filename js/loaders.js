@@ -10,14 +10,11 @@ class Sprite {
     this.data = {};
   }
 
-  load(spriteName) {
-    return fetch(`../sprites/${spriteName}.json`)
-    .then(result => result.json())
-    .catch(err => {
-      console.log(err);
-      return Promise.reject(err);
-    })
-    .then(json => {
+  async load(spriteName) {
+    try {
+      const result = await fetch(`../sprites/${spriteName}.json`);
+      const json = await result.json();
+
       this.data = json;
       this.x = this.data.states[this.data.defaultState][this.index * 5];
       this.y = this.data.states[this.data.defaultState][this.index * 5 + 1];
@@ -26,9 +23,13 @@ class Sprite {
       return new Promise((resolve, reject) => {
         this.image.src = `../sprites/${spriteName}.png`;
         this.image.onload = () => void resolve(this);
-        this.image.onerror = () => void reject(`Could not load sprite from URL ${url}`);
+        this.image.onerror = () => void reject(`Could not load sprite from URL ${this.image.src}`);
       });
-    });
+    }
+    catch (err) {
+      console.log(err);
+      throw err;
+    };
   }
   getBbox(sprite) {
     return {
@@ -53,42 +54,45 @@ class Sprite {
   }
 };
 
-const loadLevel = function(level = '') {
-  return fetch(`../data/levels/${level}.json`)
-  .then(result => result.json())
-  .catch(err => {
+const loadLevel = async function(level = '') {
+  try {
+    const result = await fetch(`../data/levels/${level}.json`);
+    return await result.json();
+  }
+  catch (err) {
     console.log(err);
-    return Promise.reject(err);
-  });
+    throw err;
+  };
 }
 
-const loadSprite = function(spriteName = '') {
+const loadSprite = async function(spriteName = '') {
   const sprite = new Sprite();
     
-  return sprite.load(spriteName)
-  .catch(err => console.log(`Error: ${err}`));
+  try {
+    return await sprite.load(spriteName);
+  }
+  catch (err) {
+    console.log(`Error: ${err}`);
+    throw err;
+  }
 }
 
-export function loadLevels(levels) {
-  return Promise.all(
+export async function loadLevels(levels) {
+  const results = await Promise.all(
     levels.map(levelName => loadLevel(levelName))
-  )
-  .then(results => {
-    results.forEach((result, i) => {
-      levels[i] = result;
-    });
+  );
+  results.forEach((result, i) => {
+    levels[i] = result;
   });
 };
 
-export function loadSprites(sprites) {
-  return Promise.all(
+export async function loadSprites(sprites) {
+  const results = await Promise.all(
     Object.keys(sprites).map(key => {
       return Promise.all([key, loadSprite(sprites[key])]);
     })
   )
-  .then(results => {
-    results.forEach(result => {
-      sprites[result[0]] = result[1];
-    });
+  results.forEach(result => {
+    sprites[result[0]] = result[1];
   });
 }

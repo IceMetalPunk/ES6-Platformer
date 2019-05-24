@@ -15,14 +15,13 @@ const tick = function(level) {
   applyPhysics(level, Sprites);
 };
 
-const initialize = function() {
+const initialize = async function() {
   initRenderers();
 
-  loadSprites(Sprites)
-  .then(() => loadLevels(Levels))
-  .then(() => {
-    gameLoop = setInterval(() => tick(Levels[currentLevel]), 33);
-  });
+  await loadSprites(Sprites);
+  await loadLevels(Levels);
+  
+  gameLoop = setInterval(() => tick(Levels[currentLevel]), 33);
 };
 
 window.addEventListener('DOMContentLoaded', initialize);
