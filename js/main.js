@@ -8,7 +8,8 @@ const Sprites = {
   KIRBY: 'kirby'
 };
 const Audio = {
-  BGM1: 'bensound-creativeminds.mp3'
+  BGM1: 'bensound-creativeminds.mp3',
+  BGM2: 'bensound-littleidea.mp3'
 };
 const Levels = ['1-1'];
 

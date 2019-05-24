@@ -1,3 +1,5 @@
+import { eventPromise } from "./helpers.js";
+
 class Sprite {
   constructor() {
     this.x = 0;
@@ -20,11 +22,9 @@ class Sprite {
       this.y = this.data.states[this.data.defaultState][this.index * 5 + 1];
       this.w = this.data.states[this.data.defaultState][this.index * 5 + 2];
       this.h = this.data.states[this.data.defaultState][this.index * 5 + 3];
-      return await new Promise((resolve, reject) => {
-        this.image.src = `../sprites/${spriteName}.png`;
-        this.image.onload = () => resolve(this);
-        this.image.onerror = () => reject(new Error(`Could not load sprite from URL ${this.image.src}`));
-      });
+      this.image.src = `../sprites/${spriteName}.png`;
+      await eventPromise(this.image);
+      return this;
     }
     catch (err) {
       throw new Error(`Error loading sprite ${spriteName}:\n${err.message}`);
@@ -72,11 +72,7 @@ const loadSprite = async function(spriteName = '') {
 const loadAudio = async function(audioName = '') {
   try {
     const audio = new Audio(`../data/audio/${audioName}`);
-    return await new Promise((resolve, reject) => {
-      audio.oncanplaythrough = () => resolve(audio);
-      audio.onerror = () => reject(new Error(`Could not load audio from URL ${audio.src}`))
-      audio.load();
-    });
+    return await eventPromise(audio, 'canplaythrough');
   }
   catch (err) {
     throw new Error(`Error loading audio ${audioName}:\n${err.message}`);
