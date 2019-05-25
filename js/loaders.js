@@ -33,11 +33,16 @@ class Sprite {
   getBbox(sprite) {
     return {
       left: sprite.position[0],
-      top: sprite.position[1] - this.data.states[sprite.state][this.index * 5 + 3],
+      top: sprite.position[1],
       right: sprite.position[0] + this.data.states[sprite.state][this.index * 5 + 2],
-      bottom: sprite.position[1]
+      bottom: sprite.position[1] + this.data.states[sprite.state][this.index * 5 + 3]
     };
-  }
+  };
+
+  drawDebug(context, sprite) {
+    const bbox = this.getBbox(sprite);
+    context.strokeRect(bbox.left, bbox.top, bbox.right-bbox.left, bbox.bottom-bbox.top);
+  };
 
   draw(context, sprite) {
     if (++this.timer >= this.data.states[sprite.state][this.index * 5 + 4]) {

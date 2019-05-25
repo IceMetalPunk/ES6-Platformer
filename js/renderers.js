@@ -31,6 +31,9 @@ const renderTiles = function(level) {
 const renderSprites = function(level, sprites) {
   level.sprites.forEach(sprite => {
     sprites[sprite.sprite].draw(context, sprite);
+    if (window.debug) {
+      sprites[sprite.sprite].drawDebug(context, sprite);
+    }
   });
 }
 

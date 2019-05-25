@@ -6,9 +6,10 @@
   "size": [20, 14],
   "tiles": [
     {
-      "position": [5, 12],
+      "position": [5, 5, 10, 8],
       "color": "#aaaa00",
       "physics": {
+        "gravity": 0.4,
         "collisions": ["player"],
         "stopAtBorder": true
       }

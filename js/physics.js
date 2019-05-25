@@ -23,9 +23,6 @@ const areTileBboxCollisions = function(level, sprites, sprite) {
     return tileBbox.left <= spriteBbox.right && tileBbox.right >= spriteBbox.left &&
            tileBbox.top <= spriteBbox.bottom && tileBbox.bottom >= spriteBbox.top;
   });
-  if (ret) {
-    console.log('Hit ', found, ' from ', spriteBbox);
-  }
   return ret;
 }
 
@@ -33,7 +30,7 @@ const applyTilePhysics = function(level) {
   level.tiles.forEach(tile => {
     let maxY = tile.position[1];
     if (tile.position.length === 4) {
-      maxY = Math.max(tile.position[0], tile.position[2]);
+      maxY = Math.max(tile.position[0], tile.position[3]);
     }
 
     if (tile.physics.gravity && (!tile.physics.stopAtBorder || maxY < level.size[1])) {
@@ -58,7 +55,6 @@ const applySpritePhysics = function(level, sprites) {
     for (let x = 0; x < Math.abs(sprite.physics.hspeed); ++x) {
       sprite.position[0] += Math.sign(sprite.physics.hspeed);
       if (areTileBboxCollisions(level, sprites, sprite)) {
-        console.log('Collided');
         sprite.position[0] -= Math.sign(sprite.physics.hspeed);
         sprite.physics.hspeed = 0;
         break;
