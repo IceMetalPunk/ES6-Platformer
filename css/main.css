@@ -1,3 +1,15 @@
 #game {
   border: 1px solid #000000;
 }
+#loadProgressBar {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  border: 0;
+  height: 2px;
+  display: inline-block;
+}
+#loadProgressBar.complete {
+  display: none;
+}

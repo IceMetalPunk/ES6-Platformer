@@ -1,5 +1,48 @@
 import { eventPromise } from "./helpers.js";
 
+class LoadManager {
+  constructor() {
+    this.pending = 0;
+    this.total = 0;
+    this.loadingBar = document.getElementById('loadProgressBar');
+    this.batches = {};
+  }
+  updateBar() {
+    this.loadingBar.max = this.total;
+    this.loadingBar.value = this.total - this.pending;
+    if (this.pending === 0) {
+      this.loadingBar.classList.add('complete');
+    }
+    else {
+      this.loadingBar.classList.remove('complete');
+    }
+  }
+  beginBatch(batch, size = 0) {
+    this.batches[batch] = size;
+    this.pending += size;
+    this.total += size;
+  }
+  async track(batch = '', promise = Promise.resolve()) {
+    if (!this.batches[batch]) {
+      ++this.pending;
+      ++this.total;
+    }
+    this.updateBar();
+    const result = await promise;
+
+    --this.pending;
+    if (this.batches[batch]) {
+      --this.batches[batch];
+      if (this.batches[batch] <= 0) {
+        delete this.batches[batch];
+      }
+    }
+    this.updateBar();
+    return result;
+  }
+}
+const loadManager = new LoadManager();
+
 class Sprite {
   constructor() {
     this.image = new Image();
@@ -80,8 +123,11 @@ class Sprite {
 
 const loadLevel = async function(level = '') {
   try {
-    const result = await fetch(`../data/levels/${level}.json`);
-    return await result.json();
+    return await loadManager.track(
+                   'Levels',
+                    fetch(`../data/levels/${level}.json`)
+                      .then(res => res.json())
+                  );
   }
   catch (err) {
     throw new Error(`Error loading level ${level}:\n${err.message}`);
@@ -91,13 +137,13 @@ const loadLevel = async function(level = '') {
 const loadSprite = async function(spriteName = '') {
   const sprite = new Sprite();
 
-  return await sprite.load(spriteName);
+  return await loadManager.track('Sprites', sprite.load(spriteName));
 }
 
 const loadAudio = async function(audioName = '') {
   try {
     const audio = new Audio(`../data/audio/${audioName}`);
-    return await eventPromise(audio, 'canplaythrough');
+    return await loadManager.track('Audio', eventPromise(audio, 'canplaythrough'));
   }
   catch (err) {
     throw new Error(`Error loading audio ${audioName}:\n${err.message}`);
@@ -105,6 +151,7 @@ const loadAudio = async function(audioName = '') {
 }
 
 export async function loadLevels(levels) {
+  loadManager.beginBatch('Levels', levels.length);
   const results = await Promise.all(
     levels.map(levelName => loadLevel(levelName))
   );
@@ -115,6 +162,7 @@ export async function loadLevels(levels) {
 
 export async function loadSprites(sprites) {
   try {
+    loadManager.beginBatch('Sprites', Object.keys(sprites).length);
     const results = await Promise.all(
       Object.keys(sprites).map(key => {
         return Promise.all([key, loadSprite(sprites[key])]);
@@ -131,6 +179,7 @@ export async function loadSprites(sprites) {
 
 export async function loadAudios(audios) {
   try {
+    loadManager.beginBatch('Audio', Object.keys(audios).length);
     const results = await Promise.all(
       Object.keys(audios).map(key => {
         return Promise.all([key, loadAudio(audios[key])]);
