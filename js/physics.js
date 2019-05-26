@@ -60,13 +60,20 @@ const applySpritePhysics = function(level, sprites) {
         break;
       }
     }
+
     for (let y = 0; y < Math.abs(sprite.physics.vspeed); ++y) {
       sprite.position[1] += Math.sign(sprite.physics.vspeed);
       if (areTileBboxCollisions(level, sprites, sprite)) {
         applyGravity = false;
         sprite.position[1] -= Math.sign(sprite.physics.vspeed);
+        if (sprite.physics.vspeed > 0) {
+          sprite.physics.onGround = true;
+        }
         sprite.physics.vspeed = 0;
         break;
+      }
+      else {
+        sprite.physics.onGround = false;
       }
     }
 
@@ -75,6 +82,7 @@ const applySpritePhysics = function(level, sprites) {
       sprite.physics.vspeed = Math.min(sprite.physics.vspeed, sprite.physics.maxvspeed);
     }
     else {
+      sprite.physics.onGround = true;
       sprite.physics.vspeed = 0;
       sprite.position[1] = Math.max(0, Math.min(Math.floor(sprite.position[1]), Math.round(level.size[1] * level.tileSize[1])));
     }
