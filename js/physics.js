@@ -15,11 +15,9 @@ const getTileBbox = function(level, tile) {
 };
 
 const areTileBboxCollisions = function(level, sprites, sprite) {
-  const spriteBbox = sprites[sprite.sprite].getBbox(sprite);
-  let found;
+  const spriteBbox = sprites[sprite.spriteData.name].getBbox(sprite);
   const ret = level.tiles.some(tile => {
     const tileBbox = getTileBbox(level, tile);
-    found = tileBbox;
     return tileBbox.left <= spriteBbox.right && tileBbox.right >= spriteBbox.left &&
            tileBbox.top <= spriteBbox.bottom && tileBbox.bottom >= spriteBbox.top;
   });
@@ -90,6 +88,13 @@ const applySpritePhysics = function(level, sprites) {
     if (sprite.physics.stopAtBorder && sprite.position[0] <= 0 && sprite.physics.hspeed < 0) {
       sprite.position[0] = 0;
       sprite.physics.hspeed = 0;
+    }
+
+    if (sprite.physics.hspeed === 0) {
+      sprites[sprite.spriteData.name].setState(sprite, 'stand');
+    }
+    else {
+      sprites[sprite.spriteData.name].setState(sprite, 'walk');
     }
   });
 };

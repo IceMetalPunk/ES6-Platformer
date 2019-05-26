@@ -2,12 +2,6 @@ import { eventPromise } from "./helpers.js";
 
 class Sprite {
   constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.w = 32;
-    this.h = 32;
-    this.index = 0;
-    this.timer = 0;
     this.image = new Image();
     this.data = {};
   }
@@ -31,33 +25,56 @@ class Sprite {
     };
   }
   getBbox(sprite) {
-    let state = this.data.states[sprite.state] ? sprite.state : this.data.defaultState;
+    let state = this.data.states[sprite.spriteData.state] ? sprite.spriteData.state : this.data.defaultState;
     return {
       left: sprite.position[0],
       top: sprite.position[1],
-      right: sprite.position[0] + this.data.states[state][this.index * 5 + 2],
-      bottom: sprite.position[1] + this.data.states[state][this.index * 5 + 3]
+      right: sprite.position[0] + this.data.states[state][sprite.spriteData.imageIndex * 5 + 2],
+      bottom: sprite.position[1] + this.data.states[state][sprite.spriteData.imageIndex * 5 + 3]
     };
   };
 
   drawDebug(context, sprite) {
     const bbox = this.getBbox(sprite);
     context.strokeRect(bbox.left, bbox.top, bbox.right-bbox.left, bbox.bottom-bbox.top);
-    context.fillText(this.index, bbox.left, bbox.top-10);
+    context.fillText(sprite.spriteData.imageIndex, bbox.left, bbox.top-10);
   };
 
   draw(context, sprite) {
-    let state = this.data.states[sprite.state] ? sprite.state : this.data.defaultState;
-    if (++this.timer >= this.data.states[state][this.index * 5 + 4]) {
-      this.timer = 0;
-      this.index = (++this.index) % (Math.floor(this.data.states[state].length / 5));
-      this.x = this.data.states[state][this.index * 5];
-      this.y = this.data.states[state][this.index * 5 + 1];
-      this.w = this.data.states[state][this.index * 5 + 2];
-      this.h = this.data.states[state][this.index * 5 + 3];
+    const requiredProperties = ['timer', 'imageIndex'];
+    if (!sprite.spriteData) {
+      sprite.spriteData = {};
     }
+    requiredProperties.forEach(prop => {
+      if (!sprite.spriteData.hasOwnProperty(prop)) {
+        sprite.spriteData[prop] = 0;
+      }
+    });
+    let state = this.data.states[sprite.spriteData.state] ? sprite.spriteData.state : this.data.defaultState;
+    let timer = sprite.spriteData.timer + 1;
+    if (timer >= this.data.states[state][sprite.spriteData.imageIndex * 5 + 4]) {
+      timer = 0;
+      sprite.spriteData.imageIndex = (++sprite.spriteData.imageIndex) % (Math.floor(this.data.states[state].length / 5));
+      sprite.spriteData.sx = this.data.states[state][sprite.spriteData.imageIndex * 5];
+      sprite.spriteData.sy = this.data.states[state][sprite.spriteData.imageIndex * 5 + 1];
+      sprite.spriteData.sw = this.data.states[state][sprite.spriteData.imageIndex * 5 + 2];
+      sprite.spriteData.sh = this.data.states[state][sprite.spriteData.imageIndex * 5 + 3];
+    }
+    sprite.spriteData.timer = timer;
 
-    context.drawImage(this.image, this.x, this.y, this.w, this.h, sprite.position[0], sprite.position[1], this.w, this.h);
+    context.drawImage(this.image, sprite.spriteData.sx, sprite.spriteData.sy, sprite.spriteData.sw, sprite.spriteData.sh, sprite.position[0], sprite.position[1], sprite.spriteData.sw, sprite.spriteData.sh);
+  }
+
+  setState(sprite, state = '') {
+    if (sprite.spriteData.state !== state) {
+      sprite.spriteData.state = state;
+      sprite.spriteData.timer = 0;
+      sprite.spriteData.imageIndex = 0;
+      sprite.spriteData.sx = this.data.states[state][sprite.spriteData.imageIndex * 5];
+      sprite.spriteData.sy = this.data.states[state][sprite.spriteData.imageIndex * 5 + 1];
+      sprite.spriteData.sw = this.data.states[state][sprite.spriteData.imageIndex * 5 + 2];
+      sprite.spriteData.sh = this.data.states[state][sprite.spriteData.imageIndex * 5 + 3];
+    }
   }
 };
 

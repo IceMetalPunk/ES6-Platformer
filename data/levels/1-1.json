@@ -17,9 +17,11 @@
   ],
   "sprites": [
     {
-      "sprite": "KIRBY",
-      "state": "walk",
       "position": [5, 400],
+      "spriteData": {
+        "name": "KIRBY",
+        "state": "stand"
+      },
       "physics": {
         "type": "player",
         "gravity": 2,
