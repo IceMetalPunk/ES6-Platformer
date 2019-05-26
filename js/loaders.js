@@ -31,11 +31,12 @@ class Sprite {
     };
   }
   getBbox(sprite) {
+    let state = this.data.states[sprite.state] ? sprite.state : this.data.defaultState;
     return {
       left: sprite.position[0],
       top: sprite.position[1],
-      right: sprite.position[0] + this.data.states[sprite.state][this.index * 5 + 2],
-      bottom: sprite.position[1] + this.data.states[sprite.state][this.index * 5 + 3]
+      right: sprite.position[0] + this.data.states[state][this.index * 5 + 2],
+      bottom: sprite.position[1] + this.data.states[state][this.index * 5 + 3]
     };
   };
 
@@ -45,13 +46,14 @@ class Sprite {
   };
 
   draw(context, sprite) {
-    if (++this.timer >= this.data.states[sprite.state][this.index * 5 + 4]) {
+    let state = this.data.states[sprite.state] ? sprite.state : this.data.defaultState;
+    if (++this.timer >= this.data.states[state][this.index * 5 + 4]) {
       this.timer = 0;
-      this.index = (++this.index) % (Math.floor(this.data.states[sprite.state].length / 5));
-      this.x = this.data.states[sprite.state][this.index * 5];
-      this.y = this.data.states[sprite.state][this.index * 5 + 1];
-      this.w = this.data.states[sprite.state][this.index * 5 + 2];
-      this.h = this.data.states[sprite.state][this.index * 5 + 3];
+      this.index = (++this.index) % (Math.floor(this.data.states[state].length / 5));
+      this.x = this.data.states[state][this.index * 5];
+      this.y = this.data.states[state][this.index * 5 + 1];
+      this.w = this.data.states[state][this.index * 5 + 2];
+      this.h = this.data.states[state][this.index * 5 + 3];
     }
 
     context.drawImage(this.image, this.x, this.y, this.w, this.h, sprite.position[0], sprite.position[1], this.w, this.h);
