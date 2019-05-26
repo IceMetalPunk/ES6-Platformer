@@ -43,6 +43,7 @@ class Sprite {
   drawDebug(context, sprite) {
     const bbox = this.getBbox(sprite);
     context.strokeRect(bbox.left, bbox.top, bbox.right-bbox.left, bbox.bottom-bbox.top);
+    context.fillText(this.index, bbox.left, bbox.top-10);
   };
 
   draw(context, sprite) {
