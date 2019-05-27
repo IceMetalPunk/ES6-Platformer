@@ -20,7 +20,7 @@ export function applyPlayerControl(level) {
     if (sprite.physics.type === 'player') {
       sprite.physics.hspeed = sprite.physics.maxhspeed * Number(KeyMap.has('ArrowRight') - KeyMap.has('ArrowLeft'));
 
-      if (KeyMap.get('ArrowUp') && sprite.physics.onGround) {
+      if (KeyMap.has('ArrowUp') && sprite.physics.onGround) {
         sprite.physics.vspeed = -sprite.physics.jumpspeed;
       }
     }
