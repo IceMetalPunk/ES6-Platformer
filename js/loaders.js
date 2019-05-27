@@ -121,18 +121,27 @@ class Sprite {
   }
 };
 
-const loadLevel = async function(level = '') {
-  try {
-    return await loadManager.track(
-                   'Levels',
-                    fetch(`../data/levels/${level}.json`)
-                      .then(res => res.json())
-                  );
+export const levelStream = (function() {
+  let world = 1;
+  let level = 0;
+  return {
+    next: async function() {
+      ++level;
+      let response = await fetch(`../data/levels/${world}-${level}.json`);
+      if (response.status !== 200) {
+        level = 1;
+        ++world;
+        response = await fetch(`../data/levels/${world}-${level}.json`);
+      }
+      if (response.status === 200) {
+        const json = await response.json();
+        return json;
+      }
+
+      return null;
+    }
   }
-  catch (err) {
-    throw new Error(`Error loading level ${level}:\n${err.message}`);
-  };
-}
+})();
 
 const loadSprite = async function(spriteName = '') {
   const sprite = new Sprite();
@@ -149,16 +158,6 @@ const loadAudio = async function(audioName = '') {
     throw new Error(`Error loading audio ${audioName}:\n${err.message}`);
   }
 }
-
-export async function loadLevels(levels) {
-  loadManager.beginBatch('Levels', levels.length);
-  const results = await Promise.all(
-    levels.map(levelName => loadLevel(levelName))
-  );
-  results.forEach((result, i) => {
-    levels[i] = result;
-  });
-};
 
 export async function loadSprites(sprites) {
   try {

@@ -1,4 +1,4 @@
-import {loadLevels, loadSprites, loadAudios} from './loaders.js';
+import {levelStream, loadSprites, loadAudios} from './loaders.js';
 import {initRenderers, drawLevel, drawGameStartOverlay, drawErrorOverlay} from './renderers.js';
 import {applyPhysics} from './physics.js';
 import {updateInput} from './input.js';
@@ -11,7 +11,7 @@ const Audio = {
   BGM1: 'bensound-creativeminds.mp3',
   BGM2: 'bensound-littleidea.mp3'
 };
-const Levels = ['1-1'];
+const Levels = [];
 
 const tick = function(level) {
   drawLevel(level, Sprites);
@@ -19,9 +19,20 @@ const tick = function(level) {
   applyPhysics(level, Sprites);
 };
 
+const stopAllAudio = function() {
+  Object.keys(Audio).forEach(key => {
+    Audio[key].pause();
+    Audio[key].fastSeek(0);
+  });
+}
+
 const startLevel = function(level) {
+  stopAllAudio();
   if (level.music) {
     Audio[level.music].play();
+  }
+  if (gameLoop) {
+    clearInterval(gameLoop);
   }
   gameLoop = setInterval(() => tick(level), 33);
 }
@@ -32,8 +43,13 @@ const initialize = async function() {
 
     await loadSprites(Sprites);
     await loadAudios(Audio);
-    await loadLevels(Levels);
+    const level = await levelStream.next();
     
+    if (level === null) {
+      throw new Error('Could not download level 1-1!');
+    }
+    Levels.push(level);
+
     currentLevel = 0;
     drawGameStartOverlay();
   }
@@ -43,7 +59,28 @@ const initialize = async function() {
   }
 };
 
+const nextLevel = async function() {
+  try {
+    const level = await levelStream.next();
+
+    if (level === null) {
+      throw new Error('Could not download next level!');
+    }
+    Levels.push(level);
+    currentLevel = Levels.length - 1;
+    startLevel(Levels[currentLevel]);
+  }
+  catch (err) {
+    clearInterval(gameLoop);
+    gameLoop = -1;
+    stopAllAudio();
+    drawErrorOverlay(`Failed to load game! Cause:\n${err.message}`);
+    throw err;
+  }
+};
+
 window.addEventListener('DOMContentLoaded', initialize);
+window.addEventListener('keydown', nextLevel);
 document.addEventListener('click', () => {
   if (!gameLoop && currentLevel >= 0) {
     startLevel(Levels[currentLevel]);
