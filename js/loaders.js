@@ -128,12 +128,12 @@ export const levelStream = (function() {
     next: async function() {
       ++level;
       let response = await fetch(`../data/levels/${world}-${level}.json`);
-      if (response.status !== 200) {
+      if (!response.ok) {
         level = 1;
         ++world;
         response = await fetch(`../data/levels/${world}-${level}.json`);
       }
-      if (response.status === 200) {
+      if (response.ok) {
         const json = await response.json();
         return json;
       }
