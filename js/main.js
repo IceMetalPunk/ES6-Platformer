@@ -22,7 +22,7 @@ const tick = function(level) {
 const stopAllAudio = function() {
   Object.keys(Audio).forEach(key => {
     Audio[key].pause();
-    Audio[key].fastSeek(0);
+    Audio[key].currentTime = 0;
   });
 }
 
@@ -80,7 +80,6 @@ const nextLevel = async function() {
 };
 
 window.addEventListener('DOMContentLoaded', initialize);
-window.addEventListener('keydown', nextLevel);
 document.addEventListener('click', () => {
   if (!gameLoop && currentLevel >= 0) {
     startLevel(Levels[currentLevel]);
