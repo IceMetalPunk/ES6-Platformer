@@ -1,26 +1,20 @@
-const KeyMap = new Map();
+const KeySet = new Set();
 
 document.addEventListener('keydown', ev => {
-  if (!KeyMap.has(ev.code)) {
-    KeyMap.set(ev.code, 0);
+  if (!KeySet.has(ev.code)) {
+    KeySet.add(ev.code);
   }
 });
 document.addEventListener('keyup', ev => {
-  KeyMap.delete(ev.code);
+  KeySet.delete(ev.code);
 });
-
-export function updateInput() {
-  KeyMap.forEach((value, key) => {
-    KeyMap.set(key, value + 1);
-  });
-};
 
 export function applyPlayerControl(level) {
   level.sprites.forEach(sprite => {
     if (sprite.physics.type === 'player') {
-      sprite.physics.hspeed = sprite.physics.maxhspeed * Number(KeyMap.has('ArrowRight') - KeyMap.has('ArrowLeft'));
+      sprite.physics.hspeed = sprite.physics.maxhspeed * Number(KeySet.has('ArrowRight') - KeySet.has('ArrowLeft'));
 
-      if (KeyMap.has('ArrowUp') && sprite.physics.onGround) {
+      if (KeySet.has('ArrowUp') && sprite.physics.onGround) {
         sprite.physics.vspeed = -sprite.physics.jumpspeed;
       }
     }

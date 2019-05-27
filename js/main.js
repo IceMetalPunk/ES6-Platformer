@@ -1,7 +1,7 @@
 import {levelStream, loadSprites, loadAudios} from './loaders.js';
 import {initRenderers, drawLevel, drawGameStartOverlay, drawErrorOverlay} from './renderers.js';
 import {applyPhysics} from './physics.js';
-import {updateInput} from './input.js';
+import './input.js';
 
 let gameLoop, currentLevel = -1;
 const Sprites = {
@@ -15,7 +15,6 @@ const Levels = [];
 
 const tick = function(level) {
   drawLevel(level, Sprites);
-  updateInput();
   applyPhysics(level, Sprites);
 };
 
