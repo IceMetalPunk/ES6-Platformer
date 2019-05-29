@@ -46,6 +46,17 @@ const applyTilePhysics = function(level) {
   });
 };
 
+const moveOutsideGround = function(level, sprites, sprite) {
+  const spriteBbox = sprites[sprite.spriteData.name].getBbox(sprite);
+  const ret = level.tiles.some(tile => {
+    const tileBbox = getTileBbox(level, tile);
+    if (tileBbox.left <= spriteBbox.right && tileBbox.right >= spriteBbox.left &&
+      tileBbox.top <= spriteBbox.bottom && tileBbox.bottom + 1 >= spriteBbox.top) {
+        sprite.position[1] = tileBbox.top - sprite.spriteData.sh - 1;
+      }
+  });
+}
+
 const applySpritePhysics = function(level, sprites) {
   level.sprites.forEach(sprite => {
 
@@ -97,6 +108,8 @@ const applySpritePhysics = function(level, sprites) {
     else {
       sprites[sprite.spriteData.name].setState(sprite, 'walk');
     }
+
+    moveOutsideGround(level, sprites, sprite);
   });
 };
 
