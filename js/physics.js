@@ -101,7 +101,6 @@ const applySpritePhysics = function(level, sprites) {
       sprite.physics.hspeed = 0;
     }
 
-    /* FIXME: When switching between states with different BBoxes, collision can be wonky. */
     if (sprite.physics.hspeed === 0) {
       sprites[sprite.spriteData.name].setState(sprite, 'stand');
     }
