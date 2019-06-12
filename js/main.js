@@ -60,24 +60,36 @@ const initialize = async function() {
 };
 
 const nextLevel = async function() {
-  try {
-    const level = await levelStream.next();
-
-    if (level === null) {
-      throw new Error('Could not download next level!');
-    }
-    Levels.push(level);
-    currentLevel = Levels.length - 1;
+  if (currentLevel < Levels.length - 1) {
+    ++currentLevel;
     startLevel(Levels[currentLevel]);
   }
-  catch (err) {
-    clearInterval(gameLoop);
-    gameLoop = -1;
-    stopAllAudio();
-    drawErrorOverlay(`Failed to load game! Cause:\n${err.message}`);
-    throw err;
+  else {
+    try {
+      const level = await levelStream.next();
+
+      if (level === null) {
+        throw new Error('Could not download next level!');
+      }
+      Levels.push(level);
+      currentLevel = Levels.length - 1;
+      startLevel(Levels[currentLevel]);
+    }
+    catch (err) {
+      clearInterval(gameLoop);
+      gameLoop = -1;
+      stopAllAudio();
+      drawErrorOverlay(`Failed to load game! Cause:\n${err.message}`);
+      throw err;
+    }
   }
 };
+const previousLevel = function() {
+  if (Levels.length > 0 && currentLevel > 0) {
+    --currentLevel;
+    startLevel(Levels[currentLevel]);
+  }
+}
 
 window.addEventListener('DOMContentLoaded', initialize);
 document.addEventListener('click', () => {
