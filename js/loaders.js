@@ -140,7 +140,7 @@ export const levelStream = (function() {
 
       return null;
     }
-  }
+  };
 })();
 
 const loadSprite = async function(spriteName = '') {
