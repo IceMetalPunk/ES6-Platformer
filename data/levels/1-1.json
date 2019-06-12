@@ -15,6 +15,9 @@
       }
     }
   ],
+  "entities": [
+    ["BasicEnemy", 10, 10]
+  ],
   "sprites": [
     {
       "position": [5, 400],
