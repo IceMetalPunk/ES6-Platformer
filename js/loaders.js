@@ -137,7 +137,7 @@ export const levelStream = (function() {
       if (response.ok) {
         const json = await response.json();
         json.entities = (json.entities || []).map(entity => {
-          return Entities[entity[0]](entity[1], entity[2]);
+          return new Entities[entity[0]](entity[1], entity[2]);
         });
         return json;
       }

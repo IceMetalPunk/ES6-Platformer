@@ -1,4 +1,4 @@
-import { AIWalkLedgeBounce } from "./ai";
+import { AIWalkLedgeBounce } from "./ai.js";
 
 let globalLevel = 0;
 class Entity {

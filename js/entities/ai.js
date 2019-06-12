@@ -62,7 +62,7 @@ export class AIMotion extends AITask {
         this.collider = null;
     }
     initialize(entity) {
-        super(entity);
+        super.initialize(entity);
         this.collider = entity.addAITask(new AICollisionDetector());
     }
     canRun() {
